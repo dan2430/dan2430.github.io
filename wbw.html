@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html >
+<head>
+<style>
+
+
+#container {
+  position: relative;
+}
+#container canvas, #joydiv,#OUTPUT {
+  position: absolute;
+}
+
+img {
+	display: none;
+}
+</style>
+	<script src="joy.js"></script>
+	<script type="text/javascript">
+
+	</script>
+</head>
+
+<body>
+
+<div id="container">
+	<canvas  id="myCanvas" width="1280" height="720" style="border:1px solid #000000;">
+	Your browser does not support the HTML canvas tag.
+	</canvas>	
+<div id="joyDiv" style="width:200px;height:200px;margin-bottom:20px;">
+	<div id="OUTPUT">
+		hhjh
+	</div>
+</div>
+</div>
+<img id="left1" src="left1.png" >
+<img id="left2" src="left2.png" >
+<img id="left3" src="left3.png" >
+
+<img id="up1" src="up1.png" >
+<img id="up2" src="up2.png" >
+<img id="up3" src="up3.png" >
+
+<img id="down1" src="down1.png" >
+<img id="down2" src="down2.png" >
+<img id="down3" src="down3.png" >
+
+<img id="right1" src="right1.png" >
+<img id="right2" src="right2.png" >
+<img id="right3" src="right3.png" >
+</body>
+<script type="text/javascript">
+
+	window.onload=function(){
+	// Create JoyStick object into the DIV 'joyDiv'
+	var playerDIR;
+	var PlayerX,PlayerY;
+	const leftAnim = []
+	const upAnim = []
+	const downAnim = []
+	const rightAnim=[]
+	var animFrame=0;
+	var drawCount=0;
+	var lastFrame;
+	var lastInput;
+	setupAnimArrays()
+
+	PlayerX=12;
+	PlayerY=30;
+
+
+	function setupAnimArrays(){
+	leftAnim[0]=document.getElementById("left1");
+	leftAnim[1]=document.getElementById("left2");
+	leftAnim[2]=document.getElementById("left3");
+
+	upAnim[0]=document.getElementById("up1");
+	upAnim[1]=document.getElementById("up2");
+	upAnim[2]=document.getElementById("up3");
+
+	downAnim[0]=document.getElementById("down1");
+	downAnim[1]=document.getElementById("down2");
+	downAnim[2]=document.getElementById("down3");
+
+	rightAnim[0]=document.getElementById("right1");
+	rightAnim[1]=document.getElementById("right2");
+	rightAnim[2]=document.getElementById("right3");
+
+	}
+	function drawMiddle(){
+		ctx.beginPath();
+		// Define a start Point
+		ctx.moveTo(0, 360);
+		// Define an end Point
+		ctx.lineTo(1280, 360);
+		// Stroke it (Do the Drawing)
+		ctx.stroke();
+
+
+	}
+	function drawPlayer(){
+		
+		
+			ctx.strokeRect(PlayerX,PlayerY,64,64);
+			if (playerDIR=="W"||playerDIR=="NW"||playerDIR=="SW"){
+				ctx.drawImage(leftAnim[animFrame],PlayerX,PlayerY,64,64);
+				lastFrame=animFrame;
+				lastInput="W"
+			}
+			else if (playerDIR=="E"||playerDIR=="NE"||playerDIR=="SE"){
+				ctx.drawImage(rightAnim[animFrame],PlayerX,PlayerY,64,64);
+				lastFrame=animFrame;
+				lastInput="E"
+			}
+			else if (playerDIR=="N" ){
+				ctx.drawImage(upAnim[animFrame],PlayerX,PlayerY,64,64);
+				lastFrame=animFrame;
+				lastInput="N"
+			}
+			else if (playerDIR=="S"){
+				ctx.drawImage(downAnim[animFrame],PlayerX,PlayerY,64,64);
+				lastFrame=animFrame;
+				lastInput="S"
+			}
+			else{
+				if (lastInput=="S")
+					ctx.drawImage(downAnim[lastFrame],PlayerX,PlayerY,64,64);
+				if (lastInput=="E")
+					ctx.drawImage(rightAnim[lastFrame],PlayerX,PlayerY,64,64);
+				if (lastInput=="N")
+					ctx.drawImage(upAnim[lastFrame],PlayerX,PlayerY,64,64);
+				if (lastInput=="W")
+					ctx.drawImage(leftAnim[lastFrame],PlayerX,PlayerY,64,64);
+
+			}
+		//only draw every 5 frames	
+		if (drawCount%5==1){	
+			animFrame++;
+			if(animFrame>2){
+				animFrame=0
+			}
+		}
+		drawCount++;
+
+	}
+	const canvas = document.getElementById("myCanvas");
+	const ctx = canvas.getContext("2d");
+
+	ctx.fillStyle = "white";
+	ctx.fillRect(0,0,1280,720);
+	var joy = new JoyStick('joyDiv', {}, function(stickData) {
+	playerDIR=stickData.cardinalDirection;
+	});
+
+function update(progress,timestamp) {
+  // Update the state of the world for the elapsed time since last render
+    document.getElementById("OUTPUT").textContent= playerDIR;
+    
+    if (playerDIR=="N") {
+    	PlayerY-=5;
+    }
+   if (playerDIR=="S") {
+    	PlayerY+=5;
+    }
+    if (playerDIR=="W") {
+    	PlayerX-=5;
+    }
+   if (playerDIR=="E") {
+    	PlayerX+=5;
+    }
+    if (playerDIR=="NE") {
+    	PlayerX+=4;
+    	PlayerY-=4;
+    }   
+    if (playerDIR=="SE") {
+    	PlayerX+=4;
+    	PlayerY+=4;
+    } 
+    if (playerDIR=="SW") {
+    	PlayerX-=4;
+    	PlayerY+=4;
+    } 
+    if (playerDIR=="NW") {
+    	PlayerX-=4;
+    	PlayerY-=4;
+    } 
+
+}
+
+function draw() {
+  // Draw the state of the world
+	ctx.clearRect(0, 0, 1280, 720);
+	drawMiddle();
+	drawPlayer();
+}
+
+function loop(timestamp) {
+  var progress = timestamp - lastRender
+
+  update(progress,timestamp)
+  draw(timestamp)
+
+  lastRender = timestamp
+  window.requestAnimationFrame(loop)
+}
+var lastRender = 0
+window.requestAnimationFrame(loop)
+
+
+		
+			
+
+		
+	};
+</script>
+</html>
