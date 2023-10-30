@@ -8,9 +8,14 @@
 #container {
   position: relative;
 }
-#container canvas, #joydiv,#OUTPUT {
+#container canvas, #joyDiv,#OUTPUT {
   position: absolute;
 }
+
+#joyDiv{
+	padding: 550px 0;
+}
+
 
 img {
 	display: none;
@@ -25,10 +30,10 @@ img {
 <body>
 
 <div id="container">
-	<canvas  id="myCanvas" width="1280" height="720" style="border:1px solid #000000;">
+	<canvas  id="myCanvas" width="720" height="1280" style="border:1px solid #000000;">
 	Your browser does not support the HTML canvas tag.
 	</canvas>	
-<div id="joyDiv" style="width:200px;height:200px;margin-bottom:20px;">
+<div id="joyDiv" style="width:200px;height:200px;margin-bottom:30px;">
 	<div id="OUTPUT">
 		hhjh
 	</div>
@@ -62,6 +67,7 @@ img {
 	const rightAnim=[]
 	var animFrame=0;
 	var drawCount=0;
+	var itemFrequency=0;
 	var lastFrame;
 	var lastInput;
 	setupAnimArrays()
@@ -91,14 +97,18 @@ img {
 	function drawMiddle(){
 		ctx.beginPath();
 		// Define a start Point
-		ctx.moveTo(0, 360);
+		ctx.moveTo(0, 640);
 		// Define an end Point
-		ctx.lineTo(1280, 360);
+		ctx.lineTo(720, 640);
 		// Stroke it (Do the Drawing)
 		ctx.stroke();
 
 
 	}
+	function spawnItem(){
+
+	}
+
 	function drawPlayer(){
 		
 		
