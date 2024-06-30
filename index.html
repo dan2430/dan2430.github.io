@@ -5,6 +5,7 @@
 <style>
 
 
+
 #container {
   position: relative;
 }
@@ -13,8 +14,33 @@
 }
 
 #joyDiv{
-	padding: 550px 0;
+	    position: fixed;
+    bottom: 0;
+
 }
+
+#shootDIV{
+ position: fixed;
+    bottom: 0;
+    right:0;
+
+}
+#button{
+	  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 20px;
+  /**text-align: center;
+  text-decoration: none;
+  display: inline-block;**/
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+border-radius: 50%;
+width:180px;
+height:180px;
+}
+
 
 
 img {
@@ -30,13 +56,16 @@ img {
 <body>
 
 <div id="container">
-	<canvas  id="myCanvas" width="720" height="1280" style="border:1px solid #000000;">
+	<canvas  id="myCanvas"  style="border:1px solid #000000;">
 	Your browser does not support the HTML canvas tag.
 	</canvas>	
 <div id="joyDiv" style="width:200px;height:200px;margin-bottom:30px;">
 	<div id="OUTPUT">
 		hhjh
 	</div>
+</div>
+<div id="shootDIV" style="width:200px;height:200px;margin-bottom:30px;">
+ <button id="button" onclick="shootBullet()">Throw</button>
 </div>
 </div>
 <img id="left1" src="left1.png" >
@@ -59,8 +88,11 @@ img {
 
 	window.onload=function(){
 	// Create JoyStick object into the DIV 'joyDiv'
+
 	var playerDIR;
 	var PlayerX,PlayerY;
+	var EnemyX,EnemyY;
+	var BulletArray=[];
 	const leftAnim = []
 	const upAnim = []
 	const downAnim = []
@@ -71,9 +103,11 @@ img {
 	var lastFrame;
 	var lastInput;
 	setupAnimArrays()
-
-	PlayerX=12;
-	PlayerY=30;
+  readKeyboard();
+	EnemyX=12;
+	EnemyY=30;
+	PlayerX=1;
+	PlayerY=1;
 
 
 	function setupAnimArrays(){
@@ -97,9 +131,9 @@ img {
 	function drawMiddle(){
 		ctx.beginPath();
 		// Define a start Point
-		ctx.moveTo(0, 640);
+		ctx.moveTo(0, windowHeight/2);
 		// Define an end Point
-		ctx.lineTo(720, 640);
+		ctx.lineTo(windowWidth, windowHeight/2);
 		// Stroke it (Do the Drawing)
 		ctx.stroke();
 
@@ -108,11 +142,42 @@ img {
 	function spawnItem(){
 
 	}
+	function shootBullet(){
+		const bullet=new Bullet(PlayerX,PlayerY,"Blue");
+		BulletArray.push(bullet);
+
+	}
+	function updateBullet(){
+		BulletArray.forEach((element) => element.y-=6);
+
+	}
+ function Bullet(x,y,color){
+ this.x=x;
+ this.y=y;
+ this.color=color;
+
+ }
+ function Box(x,y,height,width){
+ this.x=x;
+ this.y=y;
+ this.height=height;
+ this.width=width;
+
+ }
+ function drawBullet(x,y){
+ctx.fillStyle = "blue";
+ctx.beginPath();
+ctx.arc(x, y, 10, 0, 2 * Math.PI);
+ctx.fill();
+
+ }
 
 	function drawPlayer(){
 		
 		
 			ctx.strokeRect(PlayerX,PlayerY,64,64);
+			ctx.strokeRect(EnemyX,EnemyY,64,64);
+			ctx.drawImage(downAnim[0],EnemyX,EnemyY,64,64);
 			if (playerDIR=="W"||playerDIR=="NW"||playerDIR=="SW"){
 				ctx.drawImage(leftAnim[animFrame],PlayerX,PlayerY,64,64);
 				lastFrame=animFrame;
@@ -144,6 +209,7 @@ img {
 					ctx.drawImage(leftAnim[lastFrame],PlayerX,PlayerY,64,64);
 
 			}
+			BulletArray.forEach((element) =>drawBullet(element.x,element.y));
 		//only draw every 5 frames	
 		if (drawCount%5==1){	
 			animFrame++;
@@ -156,9 +222,12 @@ img {
 	}
 	const canvas = document.getElementById("myCanvas");
 	const ctx = canvas.getContext("2d");
-
+  canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+	canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  windowHeight=canvas.height;
+	windowWidth=canvas.width;
 	ctx.fillStyle = "white";
-	ctx.fillRect(0,0,1280,720);
+	ctx.fillRect(0,0,windowHeight,windowWidth);
 	var joy = new JoyStick('joyDiv', {}, function(stickData) {
 	playerDIR=stickData.cardinalDirection;
 	});
@@ -195,14 +264,62 @@ function update(progress,timestamp) {
     	PlayerX-=4;
     	PlayerY-=4;
     } 
-
+    updateBullet();
 }
 
 function draw() {
   // Draw the state of the world
-	ctx.clearRect(0, 0, 1280, 720);
+	clearScreen();
 	drawMiddle();
 	drawPlayer();
+	checkCollisions()
+}
+function clearScreen(){
+ctx.clearRect(0, 0, windowWidth, windowHeight);
+
+}
+function checkCollisions(){
+ BulletArray.forEach((element) =>{
+ 	var BulletBox=new Box(element.x,element.y,10,10);
+ 	var EnemyBox=new Box(EnemyX,EnemyY,64,64);
+  if (isCollide(BulletBox,EnemyBox)){
+  	alert("Collision "+BulletBox.y+" "+EnemyBox.y)
+  }
+
+
+
+ });
+
+
+}
+
+function isCollide(a, b) {
+    return !(
+        ((a.y + a.height) < (b.y)) ||
+        (a.y > (b.y + b.height)) ||
+        ((a.x + a.width) < b.x) ||
+        (a.x > (b.x + b.width))
+    );
+}
+
+function readKeyboard(){
+document.getElementById('button').onclick = function() {
+   shootBullet();
+};
+
+	document.addEventListener('keydown', function(event) {
+		playerDIR="C";
+    if(event.keyCode == 32) {
+        shootBullet();
+    }
+    else if(event.keyCode == 39) {
+        playerDIR="E";
+    }
+    else {
+
+
+    }
+	});
 }
 
 function loop(timestamp) {
