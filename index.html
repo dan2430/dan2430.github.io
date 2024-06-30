@@ -25,21 +25,7 @@
     right:0;
 
 }
-#button{
-	  background-color: #04AA6D; /* Green */
-  border: none;
-  color: white;
-  padding: 20px;
-  /**text-align: center;
-  text-decoration: none;
-  display: inline-block;**/
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-border-radius: 50%;
-width:180px;
-height:180px;
-}
+
 
 
 
@@ -65,7 +51,7 @@ img {
 	</div>
 </div>
 <div id="shootDIV" style="width:200px;height:200px;margin-bottom:30px;">
- <div id="button" >Throw</div>
+
 </div>
 </div>
 <img id="left1" src="left1.png" >
@@ -231,6 +217,10 @@ ctx.fill();
 	var joy = new JoyStick('joyDiv', {}, function(stickData) {
 	playerDIR=stickData.cardinalDirection;
 	});
+  var shoot = new JoyStick('shootDIV', {}, function(shootData) {
+	shootBullet();
+	});
+
 
 function update(progress,timestamp) {
   // Update the state of the world for the elapsed time since last render
@@ -303,9 +293,6 @@ function isCollide(a, b) {
 }
 
 function readKeyboard(){
-document.getElementById('button').onclick = function() {
-   shootBullet();
-};
 
 	document.addEventListener('keydown', function(event) {
 		playerDIR="C";
