@@ -2,6 +2,7 @@
 
 <html >
 <head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1" />
 <style>
 
 
@@ -293,8 +294,21 @@ function isCollide(a, b) {
 }
 
 function readKeyboard(){
+document.body.ontouchstart = function(e) {
+    if (e && e.preventDefault) { e.preventDefault(); }
+    if (e && e.stopPropagation) { e.stopPropagation(); }
+    return false;
+}
+
+document.body.ontouchmove = function(e) {
+    if (e && e.preventDefault) { e.preventDefault(); }
+    if (e && e.stopPropagation) { e.stopPropagation(); }
+    return false;
+}
+
 
 	document.addEventListener('keydown', function(event) {
+		
 		playerDIR="C";
     if(event.keyCode == 32) {
         shootBullet();
