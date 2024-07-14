@@ -2,7 +2,7 @@
 
 <html >
 <head>
-	
+
 <style>
 
 
@@ -51,13 +51,14 @@ img {
 		hhjh
 	</div>
 </div>
-<div id="shootDIV" style="width:200px;height:200px;margin-bottom:30px;">
+<div id="shootDIV" style="border:1px solid #000000; width:200px;height:200px;margin-bottom:30px;">
 
 </div>
 </div>
 <img id="left1" src="left1.png" >
 <img id="left2" src="left2.png" >
 <img id="left3" src="left3.png" >
+
 
 <img id="up1" src="up1.png" >
 <img id="up2" src="up2.png" >
@@ -89,6 +90,7 @@ img {
 	var itemFrequency=0;
 	var lastFrame;
 	var lastInput;
+	var key = [0,0,0,0,0];
 	setupAnimArrays()
   readKeyboard();
 	EnemyX=12;
@@ -158,6 +160,39 @@ ctx.arc(x, y, 10, 0, 2 * Math.PI);
 ctx.fill();
 
  }
+function changeKey(which, to) {
+	
+switch (which) {
+// left
+case 65:
+case 37:
+key[0] = to;
+break;
+        // up
+        case 87:
+        case 38:
+          key[2] = to;
+          break;
+
+        // right
+        case 68:
+        case 39:
+          key[1] = to;
+          break;
+
+        // down
+        case 83:
+        case 40:
+          key[3] = to;
+          break;
+
+        // space bar;
+        case 32:
+          key[4] = to;
+          break;
+    }
+
+}
 
 	function drawPlayer(){
 		
@@ -218,13 +253,25 @@ ctx.fill();
 	var joy = new JoyStick('joyDiv', {}, function(stickData) {
 	playerDIR=stickData.cardinalDirection;
 	});
-  var shoot = new JoyStick('shootDIV', {}, function(shootData) {
-	//shootBullet();
-	});
+
 
 
 function update(progress,timestamp) {
   // Update the state of the world for the elapsed time since last render
+  //playerDIR=""
+  if (key[2]) // up
+  playerDIR="N";
+  else if( key[3]) // down
+  playerDIR="S";
+  else if( key[0]) // left
+  playerDIR="W";
+  else if( key[1]){
+  playerDIR="E";
+
+  } 
+  else {
+  	//playerDIR=""
+  }
     document.getElementById("OUTPUT").textContent= playerDIR;
     
     if (playerDIR=="N") {
@@ -256,6 +303,7 @@ function update(progress,timestamp) {
     	PlayerY-=4;
     } 
     updateBullet();
+
 }
 
 function draw() {
@@ -294,33 +342,13 @@ function isCollide(a, b) {
 }
 
 function readKeyboard(){
-document.body.ontouchstart = function(e) {
-    if (e && e.preventDefault) { e.preventDefault(); }
-    if (e && e.stopPropagation) { e.stopPropagation(); }
-    return false;
-}
 
-document.body.ontouchmove = function(e) {
-    if (e && e.preventDefault) { e.preventDefault(); }
-    if (e && e.stopPropagation) { e.stopPropagation(); }
-    return false;
-}
+	document.addEventListener('keydown', function(e) { changeKey(e.keyCode, 1) });
+document.addEventListener('keyup', function(e) { changeKey(e.keyCode, 0) });
+document.getElementById("shootDIV").addEventListener('click', function(e) { shootBullet() });
+//document.getElementById("shootDIV").addEventListener('onclick', function(e) { changeKey(e.keyCode, 0) });
 
 
-	document.addEventListener('keydown', function(event) {
-		
-		playerDIR="C";
-    if(event.keyCode == 32) {
-        shootBullet();
-    }
-    else if(event.keyCode == 39) {
-        playerDIR="E";
-    }
-    else {
-
-
-    }
-	});
 }
 
 function loop(timestamp) {
