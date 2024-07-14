@@ -311,7 +311,7 @@ function draw() {
 	clearScreen();
 	drawMiddle();
 	drawPlayer();
-	checkCollisions()
+	//checkCollisions()
 }
 function clearScreen(){
 ctx.clearRect(0, 0, windowWidth, windowHeight);
@@ -345,9 +345,11 @@ function readKeyboard(){
 
 	document.addEventListener('keydown', function(e) { changeKey(e.keyCode, 1) });
 document.addEventListener('keyup', function(e) { changeKey(e.keyCode, 0) });
-document.getElementById("shootDIV").addEventListener('click', function(e) { shootBullet() });
-//document.getElementById("shootDIV").addEventListener('onclick', function(e) { changeKey(e.keyCode, 0) });
-
+// First we check if you support touch, otherwise it's click:
+let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+alert(touchEvent)
+// Then we bind via thát event. This way we only bind one event, instead of the two as below
+document.getElementById('shootDIV').addEventListener(touchEvent, shootBullet());
 
 }
 
